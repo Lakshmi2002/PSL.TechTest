@@ -1,5 +1,8 @@
 ﻿using FluentAssertions;
 using OpenQA.Selenium.Interactions;
+using OpenQA.Selenium.Support.UI;
+using Polly.Retry;
+using PSL.TechnicalTest.Helpers;
 
 namespace PSL.TechnicalTest.ApplicationUnderTest.Pages;
 
@@ -26,7 +29,7 @@ internal class AmazonHomePage
 
     internal IWebElement CartCount => _driver.FindElement(By.Id("nav-cart-count"));
 
-    internal IWebElement AddedtoBasket => _driver.FindElement(By.XPath("//span[contains(text(),'Added to Basket')]"));
+    internal IWebElement AddedtoBasketLabel => _driver.FindElement(By.XPath("//span[contains(text(),'Added to Basket')]"));
 
     internal IWebElement ShoppingBasketImage => _driver.FindElement(By.XPath("//img[contains(@class, 'sc-product-image')]"));
 
@@ -70,6 +73,7 @@ internal class AmazonHomePage
         AddToCartButton.Click();
         try
         {
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
             IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
             // Scrolling down the page till the element is found		
             js.ExecuteScript("arguments[0].scrollIntoView();", NoThanksButton);
@@ -79,13 +83,28 @@ internal class AmazonHomePage
         {
             //// ignore 
         }
+
+        finally
+        {
+            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
+        }
         
+    }
+
+    public void AssertWithRetry(Action assertFunction)
+    {
+        Retry.RetryPolicy.Execute(assertFunction);
     }
 
     public void SportsWatchIsAddedToBasket()
     {
-        CartCount.Text.Should().BeEquivalentTo("1");
-        AddedtoBasket.Displayed.Should().BeTrue();
+        AssertWithRetry(
+            () =>
+            {
+                CartCount.Text.Should().BeEquivalentTo("1");
+            });
+       
+        AddedtoBasketLabel.Displayed.Should().BeTrue();
     }
 
     public void ClickOnTheSportsWatchInTheShoppingCart()
