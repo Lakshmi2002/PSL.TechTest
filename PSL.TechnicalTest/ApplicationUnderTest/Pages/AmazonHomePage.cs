@@ -9,7 +9,6 @@ internal class AmazonHomePage
 
     public AmazonHomePage(IWebDriver _driver)
     {
-        _driver.Manage().Timeouts().ImplicitWait = System.TimeSpan.FromSeconds(10);
         this._driver = _driver;
     }
 
@@ -29,10 +28,26 @@ internal class AmazonHomePage
 
     internal IWebElement AddedtoBasket => _driver.FindElement(By.XPath("//span[contains(text(),'Added to Basket')]"));
 
+    internal IWebElement ShoppingBasketImage => _driver.FindElement(By.XPath("//img[contains(@class, 'sc-product-image')]"));
 
+    internal IWebElement LandingPageImage => _driver.FindElement(By.XPath("(//span[@data-action='main-image-click'])[1]"));
 
+    internal IWebElement Basket => _driver.FindElement(By.XPath("//div[@id='nav-cart-text-container']//span[2]"));
+
+    internal IWebElement ShoppingBasketDeleteLink => _driver.FindElement(By.XPath("(//input[contains(@value, 'Delete')])[1]"));
+    
 
     // Page Object Actions
+
+    public void ShoppingBasketQuantityIsZero()
+    {
+        CartCount.Text.Should().BeEquivalentTo("0");
+    }
+
+    public void ClickOnBasketIcon()
+    {
+        Basket.Click();
+    }
     public void NaviageToAmazonHomePage()
     {
         _driver.Navigate().GoToUrl("https://www.amazon.co.uk");
@@ -40,27 +55,48 @@ internal class AmazonHomePage
     public void SearchForSportsWatch()
     {
         SearchTextBox.SendKeys("Sports Watch");
-        //Actions builder = new Actions(_driver);
-        //builder.SendKeys(Keys.Return);
         SearchSubmitButton.Click();
         AcceptCookiesButton.Click();
+    }
+
+    public void IClickOnTheDeleteLinkOnTheShoppingCart()
+    {
+        ShoppingBasketDeleteLink.Click();
     }
 
     public void AddASportsWatchToBasket()
     {
         SportsWatchFromResults.Click();
         AddToCartButton.Click();
-        //IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
-        //// Scrolling down the page till the element is found		
-        //js.ExecuteScript("arguments[0].scrollIntoView();", NoThanksButton);
-        //NoThanksButton.Click();
-        Thread.Sleep(5000);
+        try
+        {
+            IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
+            // Scrolling down the page till the element is found		
+            js.ExecuteScript("arguments[0].scrollIntoView();", NoThanksButton);
+            NoThanksButton.Click();
+        }
+        catch (NoSuchElementException)
+        {
+            //// ignore 
+        }
+        
     }
 
     public void SportsWatchIsAddedToBasket()
     {
         CartCount.Text.Should().BeEquivalentTo("1");
         AddedtoBasket.Displayed.Should().BeTrue();
+    }
+
+    public void ClickOnTheSportsWatchInTheShoppingCart()
+    {
+        ShoppingBasketImage.Click();
+    }
+    
+    public void PageRedirectsToTheSportsWatchProductDetailPage()
+    {
+        LandingPageImage.Displayed.Should().BeTrue();
+        AddToCartButton.Displayed.Should().BeTrue();
     }
 
 }

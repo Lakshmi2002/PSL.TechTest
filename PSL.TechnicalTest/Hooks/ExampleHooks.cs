@@ -76,7 +76,7 @@ namespace PSL.TechnicalTest.Hooks
 
                 try
                 {
-                    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(50);
+                    _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
                     _driver.Manage().Cookies.DeleteAllCookies();
                     _driver.Manage().Window.Maximize();
                     _objectContainer.RegisterInstanceAs(_driver);
