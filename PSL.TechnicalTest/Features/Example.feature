@@ -21,11 +21,3 @@ Scenario: Check whether the quantity is decreased when removing sports watch fro
 
 
 
-
-	
-
-#Scenario: Check whether the user is redirected to the checkout page after clicking on the checkout button
-#	Given I am navigated to amazon homepage
-#	And I search for a sports watch
-#	When I add the item to the basket
-#	Then sports watch is added to basket
