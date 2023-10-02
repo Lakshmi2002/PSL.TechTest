@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
+using OpenQA.Selenium.Support.UI;
 using PSL.TechnicalTest.Helpers;
+using SeleniumExtras.WaitHelpers;
 
 namespace PSL.TechnicalTest.ApplicationUnderTest.Pages;
 
@@ -70,22 +72,15 @@ internal class AmazonHomePage
         AddToCartButton.Click();
         try
         {
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(2);
-            IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
-            // Scrolling down the page till the element is found		
-            js.ExecuteScript("arguments[0].scrollIntoView();", NoThanksButton);
+            WebDriverWait wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(2));
+            wait.Until(ExpectedConditions.ElementExists(By.XPath("//input[@aria-labelledby='attachSiNoCoverage-announce']")));
             NoThanksButton.Click();
         }
         catch (NoSuchElementException)
         {
             //// ignore 
         }
-
-        finally
-        {
-            _driver.Manage().Timeouts().ImplicitWait = TimeSpan.FromSeconds(30);
-        }
-        
+       
     }
 
     public void AssertWithRetry(Action assertFunction)
