@@ -15,12 +15,6 @@ namespace PSL.TechnicalTest.Hooks
             _objectContainer = objectContainer;
         }
 
-        [BeforeTestRun]
-        public static void BeforeTestRun()
-        {
-            Directory.CreateDirectory(Path.Combine(Environment.CurrentDirectory, "TestResults"));
-        }
-
         [BeforeScenario(Order = 0)]
         public void BeforeScenario()
         {
@@ -37,21 +31,7 @@ namespace PSL.TechnicalTest.Hooks
             }
         }
 
-        private void TakeScreenshot(ScenarioContext scenarioContext)
-        {
-            try
-            {
-                Screenshot ss = ((ITakesScreenshot)_driver).GetScreenshot();
-                ss.SaveAsFile(Path.Combine(Environment.CurrentDirectory, $"{scenarioContext.ScenarioInfo.Title}.png"),
-                    ScreenshotImageFormat.Png);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                throw;
-            }
-        }
-
+        
         public IWebDriver GetDriver(bool headless)
         {
             if (_driver == null)
